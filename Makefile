@@ -59,7 +59,7 @@ all:
 
 opam_build:
 	@echo "Toplevel configuration..."
-	@yes '' | ./configure --install_prefix $(OPAM_PREFIX)
+	@yes '' | ./configure --no-sudo --install_prefix $(OPAM_PREFIX)
 	@echo "Building Zvtov..."
 	@($(CD) zvtov &&\
 		$(MAKE) depend &&\
@@ -80,14 +80,14 @@ opam_build:
 
 opam_install:
 	@echo "Toplevel configuration..."
-	@yes '' | ./configure --install_prefix $(OPAM_PREFIX)
+	@yes '' | ./configure --no-sudo --install_prefix $(OPAM_PREFIX)
 	@echo "Installing..."
 	$(MAKE) install
 
 
 opam_remove:
 	@echo "Toplevel configuration..."
-	@yes '' | ./configure --install_prefix $(OPAM_PREFIX)
+	@yes '' | ./configure --no-sudo --install_prefix $(OPAM_PREFIX)
 	@echo "Uninstalling..."
 	$(MAKE) uninstall
 

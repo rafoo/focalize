@@ -49,6 +49,7 @@ INSTALL_PREFIX=/usr/local
 TOOLS_PREFIX_GIVEN=false;
 TOOLS_PREFIX="";
 MAKE_DOC=true;
+USE_SUDO=true;
 
 
 # Remembering the number of arguments to this script, in order
@@ -77,6 +78,9 @@ case ${argc} in
        shift 2;;
       -no-doc | --no-doc)
        MAKE_DOC=false;
+       shift;;
+      -no-sudo | --no-sudo)
+       USE_SUDO=false;
        shift;;
       -help | --help)
        usage;
@@ -459,49 +463,20 @@ INSTALL_DOC_DIR=${INSTALL_PREFIX}/share/focalize
 # otherwise, use it.
 echo "Checking if destination directories are writable..."
 SUDO=
-mkdir -p $INSTALL_BIN_DIR || true
-touch $INSTALL_BIN_DIR/writable_p
-if [ "$?" = 0 ] ;
+if [ $USE_SUDO = true ]
 then
-    rm -f $INSTALL_BIN_DIR/writable_p
-else
-    SUDO=sudo
-fi
-
-if [ "$SUDO" = "" ] ;
-then
-    mkdir -p $INSTALL_LIB_DIR || true
-    touch $INSTALL_LIB_DIR/writable_p
-    if [ "$?" = 0 ]
-    then
-        rm -f $INSTALL_LIB_DIR/writable_p
-    else
-        SUDO=sudo
-    fi
-fi
-
-if [ "$SUDO" = "" ] ;
-then
-    mkdir $INSTALL_MAN_DIR || true
-    touch $INSTALL_MAN_DIR/writable_p
-    if [ "$?" = 0 ]
-    then
-        rm -f $INSTALL_MAN_DIR/writable_p
-    else
-        SUDO=sudo
-    fi
-fi
-
-if [ "$SUDO" = "" ] ;
-then
-    mkdir -p $INSTALL_DOC_DIR || true
-    touch $INSTALL_DOC_DIR/writable_p
-    if [ "$?" = 0 ]
-    then
-        rm -f $INSTALL_DOC_DIR/writable_p
-    else
-        SUDO=sudo
-    fi
+    for dir in "$INSTALL_BIN_DIR" "$INSTALL_LIB_DIR" "$INSTALL_MAN_DIR"
+    do
+        mkdir -p "$dir" || true
+        touch "$dir/writable_p"
+        if [ "$?" = 0 ] ;
+        then
+            rm -f "$dir/writable_p"
+        else
+            SUDO=sudo
+            break
+        fi
+    done
 fi
 
 if [ "$SUDO" = "" ] ;
